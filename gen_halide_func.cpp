@@ -1,4 +1,5 @@
 #include <Halide.h>
+#include <iostream>
 
 using namespace Halide;
 
@@ -167,7 +168,9 @@ int main(void) {
 
   Func advec_mom("advec_mom");
   advec_mom(j,k) = Tuple(rhs);
-  advec_mom.compile_to_c("tst", args);
+  advec_mom.compile_to_file("advec_mom_halide_gen", args);
+
+  advec_mom.infer_input_bounds(960,960);
 
   return 0;
 }

@@ -1,15 +1,98 @@
 #include <Halide.h>
 #include <cstdio>
-#include "f_post_vol.h"
-#include "f_pre_vol.h"
-#include "f_node_flux.h"
-#include "f_node_mass_post.h"
-#include "f_node_mass_pre.h"
-#include "f_advec_vel.h"
+#include "advec_mom_halide_gen.h"
 #include "ftocmacros.h"
 
 using namespace Halide;
+/*
+void advec_mom_allocate_buffers(int *xmin,int *xmax,int *ymin,int *ymax,
+                      double *xvel1,
+                      double *yvel1,
+                      double *mass_flux_x,
+                      double *vol_flux_x,
+                      double *mass_flux_y,
+                      double *vol_flux_y,
+                      double *volume,
+                      double *density1,
+                      double *node_flux,
+                      double *node_mass_post,
+                      double *node_mass_pre,
+                      double *advec_vel,
+                      double *mom_flux,
+                      double *pre_vol,
+                      double *post_vol,
+                      double *celldx,
+                      double *celldy,
+                         int *whch_vl,
+                         int *swp_nmbr,
+                         int *drctn,
+                      Buffer *b_volume,
+                      Buffer *b_vol_flux_y,
+                      Buffer *b_post_vol,
+                      Buffer *b_pre_vol,
+                      Buffer *b_vol_flux_x,
+                      Buffer *b_mass_flux_x,
+                      Buffer *b_node_flux,
+                      Buffer *b_density1,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                      Buffer *b_volume,
+                         
+                         
+                         
+                         
+                         )
+{
+  double *vel1;
 
+  if(*whch_vl==1){
+    vel1=xvel1;
+  } else{
+    vel1=yvel1;
+  }
+
+
+  Buffer b_volume(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)volume);
+  Buffer b_vol_flux_y(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vol_flux_y);
+  Buffer b_post_vol(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)post_vol);
+  Buffer b_pre_vol(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)pre_vol);
+  Buffer b_vol_flux_x(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vol_flux_x);
+  Buffer b_mass_flux_x(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)mass_flux_x);
+  Buffer b_node_flux(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_flux);
+  Buffer b_density1(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)density1);
+  Buffer b_node_mass_post(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_mass_post);
+  Buffer b_node_mass_pre(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_mass_pre);
+  Buffer b_vel1(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vel1);
+  Buffer b_celldx(Float(64), *xmax-*xmin, 0, 0, 0, (uint8_t*)celldx);
+  Buffer b_advec_vel(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)advec_vel);
+  Buffer b_mom_flux(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)mom_flux);
+
+  Buffer b_volume(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)volume);
+  Buffer b_vol_flux_y(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vol_flux_y);
+  Buffer b_post_vol(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)post_vol);
+  Buffer b_pre_vol(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)pre_vol);
+  Buffer b_vol_flux_x(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vol_flux_x);
+  Buffer b_mass_flux_x(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)mass_flux_x);
+  Buffer b_node_flux(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_flux);
+  Buffer b_density1(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)density1);
+  Buffer b_node_mass_post(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_mass_post);
+  Buffer b_node_mass_pre(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)node_mass_pre);
+  Buffer b_vel1(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vel1);
+  Buffer b_celldx(Float(64), *xmax-*xmin, 0, 0, 0, (uint8_t*)celldx);
+  Buffer b_advec_vel(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)advec_vel);
+  Buffer b_mom_flux(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)mom_flux);
+
+}
+*/
 void advec_mom_kernel_halide(int *xmin,int *xmax,int *ymin,int *ymax,
                       double *xvel1,
                       double *yvel1,
@@ -53,15 +136,48 @@ void advec_mom_kernel_halide(int *xmin,int *xmax,int *ymin,int *ymax,
   Buffer b_vel1(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)vel1);
   Buffer b_celldx(Float(64), *xmax-*xmin, 0, 0, 0, (uint8_t*)celldx);
   Buffer b_advec_vel(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)advec_vel);
+  Buffer b_mom_flux(Float(64), *xmax-*xmin, *ymax-*ymin, 0, 0, (uint8_t*)mom_flux);
 
-  f_post_vol(b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_post_vol.raw_buffer()); 
-  f_pre_vol(b_vol_flux_x.raw_buffer(), b_vol_flux_y.raw_buffer(), b_volume.raw_buffer(), b_pre_vol.raw_buffer());
-  f_node_flux(b_mass_flux_x.raw_buffer(), b_node_flux.raw_buffer());
-  f_node_mass_post(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_node_mass_post.raw_buffer());
-  f_node_mass_pre(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_mass_flux_x.raw_buffer(), b_node_mass_pre.raw_buffer());
-  f_advec_vel(b_vel1.raw_buffer(), b_celldx.raw_buffer(), b_mass_flux_x.raw_buffer(), b_density1.raw_buffer(), b_volume.raw_buffer(),
-              b_vol_flux_y.raw_buffer(), b_advec_vel.raw_buffer());
 
+  Buffer b_out_post_vol(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)post_vol);
+  Buffer b_out_pre_vol(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)pre_vol);
+  Buffer b_out_node_flux(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)node_flux);
+  Buffer b_out_node_mass_post(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)node_mass_post);
+  Buffer b_out_node_mass_pre(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)node_mass_pre);
+  Buffer b_out_advec_vel(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)advec_vel);
+  Buffer b_out_mom_flux(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)mom_flux);
+  Buffer b_out_vel1(Float(64), *xmax-*xmin-4, *ymax-*ymin-4, 0, 0, (uint8_t*)vel1);
+
+//  f_post_vol(b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_post_vol.raw_buffer()); 
+//  f_pre_vol(b_vol_flux_x.raw_buffer(), b_vol_flux_y.raw_buffer(), b_volume.raw_buffer(), b_pre_vol.raw_buffer());
+//  f_node_flux(b_mass_flux_x.raw_buffer(), b_node_flux.raw_buffer());
+//  f_node_mass_post(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_node_mass_post.raw_buffer());
+//  f_node_mass_pre(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_mass_flux_x.raw_buffer(), b_node_mass_pre.raw_buffer());
+//  f_advec_vel(b_vel1.raw_buffer(), b_celldx.raw_buffer(), b_mass_flux_x.raw_buffer(), b_density1.raw_buffer(), b_volume.raw_buffer(),
+//              b_vol_flux_y.raw_buffer(), b_advec_vel.raw_buffer());
+//
+
+  b_out_post_vol.set_min(2,2);
+  b_out_pre_vol.set_min(2,2);
+  b_out_node_flux.set_min(2,2);
+  b_out_node_mass_post.set_min(2,2);
+  b_out_node_mass_pre.set_min(2,2);
+  b_out_advec_vel.set_min(2,2);
+  b_out_mom_flux.set_min(2,2);
+  b_out_vel1.set_min(2,2);
+
+  advec_mom_halide_gen(b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(),
+      b_vol_flux_x.raw_buffer(), b_mass_flux_x.raw_buffer(),
+      b_density1.raw_buffer(), b_celldx.raw_buffer(), b_vel1.raw_buffer(),
+      b_post_vol.raw_buffer(), b_pre_vol.raw_buffer(),
+      b_node_flux.raw_buffer(), b_node_mass_post.raw_buffer(),
+      b_node_mass_pre.raw_buffer(), b_advec_vel.raw_buffer(),
+      b_mom_flux.raw_buffer(),
+
+      b_out_post_vol.raw_buffer(), b_out_pre_vol.raw_buffer(),
+      b_out_node_flux.raw_buffer(), b_out_node_mass_post.raw_buffer(),
+      b_out_node_mass_pre.raw_buffer(), b_out_advec_vel.raw_buffer(),
+      b_out_mom_flux.raw_buffer(), b_out_vel1.raw_buffer());
   printf("ok\n");
   return;
 
