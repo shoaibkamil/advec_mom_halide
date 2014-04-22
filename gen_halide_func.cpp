@@ -2,7 +2,7 @@
 
 using namespace Halide;
 
-void main(void) {
+int main(void) {
 
   Var j("j"), k("k");
 
@@ -48,43 +48,60 @@ void main(void) {
   Func f_vel1("f_vel1");
 
   // if mom_sweep == 1
-  f_post_vol(j, k) = volume(j,k) + vol_flux_y(j,clamp(k+1, 0, vol_flux_y.height()-1)) - vol_flux_y(j,k);
+  //f_post_vol(j, k) = volume(j,k) + vol_flux_y(j,k+1) - vol_flux_y(j,k);
+  Expr e_post_vol = volume(j,k) + vol_flux_y(j,k+1) - vol_flux_y(j,k);
+  f_post_vol(j,k) = e_post_vol;
 
-  f_pre_vol(j,k) = f_post_vol(j,k) + vol_flux_x(clamp(j+1, 0, vol_flux_x.width()-1),k) - vol_flux_x(j,k);
+  //f_pre_vol(j,k) = f_post_vol(j,k) + vol_flux_x(j+1,k) - vol_flux_x(j,k);
+  Expr e_pre_vol = f_post_vol(j,k) + vol_flux_x(j+1,k) - vol_flux_x(j,k);
+  f_pre_vol(j,k) = e_pre_vol;
 
   //f_post_vol.vectorize(k, 2).parallel(j);
   //f_pre_vol.vectorize(j, 4).parallel(k);
 
-  f_post_vol.compile_to_file("f_post_vol", volume, vol_flux_y);
-  f_pre_vol.compile_to_file("f_pre_vol", vol_flux_x, vol_flux_y, volume);
+  //f_post_vol.compile_to_file("f_post_vol", volume, vol_flux_y);
+  //f_pre_vol.compile_to_file("f_pre_vol", vol_flux_x, vol_flux_y, volume);
   
 
   // if direction == 1
-  Func mass_flux_x_clamped("mass_flux_x_clamped");
-  Func density1_clamped("density1_clamped");
-  Func f_post_vol_clamped("f_post_vol_clamped");
-  Func f_node_mass_post_clamped("f_node_mass_post_clamped");
-  Func f_node_flux_clamped("f_node_flux_clamped");
+/*  Func mass_flux_x_clamped("mass_flux_x_clamped");*/
+  //Func density1_clamped("density1_clamped");
+  //Func f_post_vol_clamped("f_post_vol_clamped");
+  //Func f_node_mass_post_clamped("f_node_mass_post_clamped");
+  //Func f_node_flux_clamped("f_node_flux_clamped");
 
-  mass_flux_x_clamped(j,k) = mass_flux_x(clamp(j, 1, mass_flux_x.width()-1), clamp(k, 1, mass_flux_x.height()-1));
-  density1_clamped(j,k) = density1(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
-  f_post_vol_clamped(j,k) = f_post_vol(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+  //mass_flux_x_clamped(j,k) = mass_flux_x(clamp(j, 1, mass_flux_x.width()-1), clamp(k, 1, mass_flux_x.height()-1));
+  //density1_clamped(j,k) = density1(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+  //f_post_vol_clamped(j,k) = f_post_vol(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
 
-  f_node_flux(j,k) = 0.25f * (mass_flux_x_clamped(j,k-1)
-                         + mass_flux_x_clamped(j,k)
-                         + mass_flux_x_clamped(j+1,k-1)
-                         + mass_flux_x_clamped(j+1,k));
-  f_node_flux_clamped(j,k) = f_node_flux(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
-  f_node_mass_post(j,k) = 0.25f * (density1_clamped(j,k-1) * f_post_vol_clamped(j,k-1)
-                              + density1_clamped(j,k) * f_post_vol_clamped(j,k)
-                              + density1_clamped(j-1,k-1) * f_post_vol_clamped(j-1,k-1)
-                              + density1_clamped(j-1,k) * f_post_vol_clamped(j-1,k));
-  f_node_mass_post_clamped(j,k) = f_node_mass_post(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
-  f_node_mass_pre(j,k) = f_node_mass_post_clamped(j,k) - f_node_flux_clamped(j-1,k) + f_node_flux_clamped(j,k);
+//  f_node_flux(j,k) = 0.25f * (mass_flux_x(j,k-1)
+//                         + mass_flux_x(j,k)
+//                         + mass_flux_x(j+1,k-1)
+//                         + mass_flux_x(j+1,k));
+  Expr e_node_flux = 0.25f * (mass_flux_x(j,k-1)
+                         + mass_flux_x(j,k)
+                         + mass_flux_x(j+1,k-1)
+                         + mass_flux_x(j+1,k));
+  f_node_flux(j,k) = e_node_flux;
+  //f_node_flux(j,k) = f_node_flux(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+//  f_node_mass_post(j,k) = 0.25f * (density1(j,k-1) * f_post_vol(j,k-1)
+//                              + density1(j,k) * f_post_vol(j,k)
+//                              + density1(j-1,k-1) * f_post_vol(j-1,k-1)
+//                              + density1(j-1,k) * f_post_vol(j-1,k));
+  Expr e_node_mass_post = 0.25f * (density1(j,k-1) * f_post_vol(j,k-1)
+                              + density1(j,k) * f_post_vol(j,k)
+                              + density1(j-1,k-1) * f_post_vol(j-1,k-1)
+                              + density1(j-1,k) * f_post_vol(j-1,k));
+  f_node_mass_post(j,k) = e_node_mass_post;
+  //f_node_mass_post(j,k) = f_node_mass_post(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+  //f_node_mass_pre(j,k) = f_node_mass_post(j,k) - f_node_flux(j-1,k) + f_node_flux(j,k);
+  Expr e_node_mass_pre = f_node_mass_post(j,k) - f_node_flux(j-1,k) + f_node_flux(j,k);
+  f_node_mass_pre(j,k) = e_node_mass_pre;
 
-  f_node_flux.compile_to_file("f_node_flux", mass_flux_x);
-  f_node_mass_post.compile_to_file("f_node_mass_post", density1, volume, vol_flux_y);
-  f_node_mass_pre.compile_to_file("f_node_mass_pre", density1, volume, vol_flux_y, mass_flux_x);
+
+  //f_node_flux.compile_to_file("f_node_flux", mass_flux_x);
+  //f_node_mass_post.compile_to_file("f_node_mass_post", density1, volume, vol_flux_y);
+  //f_node_mass_pre.compile_to_file("f_node_mass_pre", density1, volume, vol_flux_y, mass_flux_x);
 
 
   Expr upwind = select(f_node_flux(j,k) < 0.0f, j+2, j-1);
@@ -106,21 +123,51 @@ void main(void) {
                                                          min(auw,adw)),
                                                 cast(Float(64), 0.0f));
 
-  f_advec_vel(j,k) = vel1(donor,k) + (1.0f-sigma)*limiter;
-  f_mom_flux(j,k) = f_advec_vel(j,k) * f_node_flux(j,k);
+//  f_advec_vel(j,k) = vel1(donor,k) + (1.0f-sigma)*limiter;
+  Expr e_advec_vel = vel1(donor,k) + (1.0f-sigma)*limiter;
+  f_advec_vel(j,k) = e_advec_vel;
 
-  f_vel1(j,k) = (vel1(j,k) * f_node_mass_pre(j,k)
+//  f_mom_flux(j,k) = f_advec_vel(j,k) * f_node_flux(j,k);
+  Expr e_mom_flux = f_advec_vel(j,k) * f_node_flux(j,k);
+  f_mom_flux(j,k) = e_mom_flux;
+
+//  f_vel1(j,k) = (vel1(j,k) * f_node_mass_pre(j,k)
+//             + f_mom_flux(j-1, k)
+//             - f_mom_flux(j,k)) / f_node_mass_post(j,k);
+  Expr e_vel1 = (vel1(j,k) * f_node_mass_pre(j,k)
              + f_mom_flux(j-1, k)
              - f_mom_flux(j,k)) / f_node_mass_post(j,k);
 
   //f_advec_vel.compile_to_file("f_advec_vel", vel1, celldx, mass_flux_x, density1, volume);
   std::vector<Argument> args;
-  args.push_back(vel1);
-  args.push_back(celldx);
+  args.push_back(volume);
+  args.push_back(vol_flux_y);
+  args.push_back(vol_flux_x);
   args.push_back(mass_flux_x);
   args.push_back(density1);
-  args.push_back(volume);
-  f_advec_vel.compile_to_file("f_advec_vel", args);
+  args.push_back(celldx);
+  args.push_back(vel1);
+  args.push_back(post_vol);
+  args.push_back(pre_vol);
+  args.push_back(node_flux);
+  args.push_back(node_mass_post);
+  args.push_back(node_mass_pre);
+  args.push_back(advec_vel);
+  args.push_back(mom_flux);
 
+  std::vector<Expr> rhs;
+  rhs.push_back(e_post_vol);
+  rhs.push_back(e_pre_vol);
+  rhs.push_back(e_node_flux);
+  rhs.push_back(e_node_mass_post);
+  rhs.push_back(e_node_mass_pre);
+  rhs.push_back(e_advec_vel);
+  rhs.push_back(e_mom_flux);
+  rhs.push_back(e_vel1);
 
+  Func advec_mom("advec_mom");
+  advec_mom(j,k) = Tuple(rhs);
+  advec_mom.compile_to_c("tst", args);
+
+  return 0;
 }
