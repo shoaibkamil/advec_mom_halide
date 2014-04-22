@@ -172,7 +172,6 @@ int main(int argc, char* argv[]) {
   double *celldx;
   double *celldy;
 
-  gen_halide_func();
 
   create_all_grids(&xvel1,
                     &yvel1,
@@ -214,6 +213,28 @@ int main(int argc, char* argv[]) {
                       &which_vl,
                       &swp_nmbr,
                       &drctn);
+  advec_mom_kernel_halide(&xmin,&xmax,&ymin,&ymax,
+                      xvel1,
+                      yvel1,
+                      mass_flux_x,
+                      vol_flux_x,
+                      mass_flux_y,
+                      vol_flux_y,
+                      volume,
+                      density1,
+                      node_flux,
+                      node_mass_post,
+                      node_mass_pre,
+                      advec_vel,
+                      mom_flux,
+                      pre_vol,
+                      post_vol,
+                      celldx,
+                      celldy,
+                      &which_vl,
+                      &swp_nmbr,
+                      &drctn);
+
 
 
   long long start, end;

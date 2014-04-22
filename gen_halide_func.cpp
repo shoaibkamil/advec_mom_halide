@@ -2,7 +2,7 @@
 
 using namespace Halide;
 
-void gen_halide_func() {
+void main(void) {
 
   Var j("j"), k("k");
 
@@ -52,6 +52,9 @@ void gen_halide_func() {
 
   f_pre_vol(j,k) = f_post_vol(j,k) + vol_flux_x(clamp(j+1, 0, vol_flux_x.width()-1),k) - vol_flux_x(j,k);
 
+  //f_post_vol.vectorize(k, 2).parallel(j);
+  //f_pre_vol.vectorize(j, 4).parallel(k);
+
   f_post_vol.compile_to_file("f_post_vol", volume, vol_flux_y);
   f_pre_vol.compile_to_file("f_pre_vol", vol_flux_x, vol_flux_y, volume);
   
@@ -65,26 +68,25 @@ void gen_halide_func() {
 
   mass_flux_x_clamped(j,k) = mass_flux_x(clamp(j, 1, mass_flux_x.width()-1), clamp(k, 1, mass_flux_x.height()-1));
   density1_clamped(j,k) = density1(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
-  //f_post_vol_clamped(j,k) = f_post_vol(clamp(j, 1, f_post_vol.width()-1), clamp(k, 1, f_post_vol.height()-1));
-  //f_node_mass_post_clamped(j,k) = f_node_mass_post(clamp(j, 1, f_node_mass_post.width()-1), clamp(k, 1, f_node_mass_post.height()-1));
-  //f_node_flux_clamped(j,k) = f_node_flux(clamp(j, 1, f_node_flux.width()-1), clamp(k, 1, f_node_flux.height()-1));
+  f_post_vol_clamped(j,k) = f_post_vol(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
 
   f_node_flux(j,k) = 0.25f * (mass_flux_x_clamped(j,k-1)
                          + mass_flux_x_clamped(j,k)
                          + mass_flux_x_clamped(j+1,k-1)
                          + mass_flux_x_clamped(j+1,k));
-  f_node_mass_post(j,k) = 0.25f * (density1_clamped(j,k-1) * f_post_vol(j,k-1)
-                              + density1_clamped(j,k) * f_post_vol(j,k)
-                              + density1_clamped(j-1,k-1) * f_post_vol(j-1,k-1)
-                              + density1_clamped(j-1,k) * f_post_vol(j-1,k));
-  f_node_mass_pre(j,k) = f_node_mass_post(j,k) - f_node_flux(j-1,k) + f_node_flux(j,k);
+  f_node_flux_clamped(j,k) = f_node_flux(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+  f_node_mass_post(j,k) = 0.25f * (density1_clamped(j,k-1) * f_post_vol_clamped(j,k-1)
+                              + density1_clamped(j,k) * f_post_vol_clamped(j,k)
+                              + density1_clamped(j-1,k-1) * f_post_vol_clamped(j-1,k-1)
+                              + density1_clamped(j-1,k) * f_post_vol_clamped(j-1,k));
+  f_node_mass_post_clamped(j,k) = f_node_mass_post(clamp(j, 1, density1.width()-1), clamp(k, 1, density1.height()-1));
+  f_node_mass_pre(j,k) = f_node_mass_post_clamped(j,k) - f_node_flux_clamped(j-1,k) + f_node_flux_clamped(j,k);
 
   f_node_flux.compile_to_file("f_node_flux", mass_flux_x);
   f_node_mass_post.compile_to_file("f_node_mass_post", density1, volume, vol_flux_y);
   f_node_mass_pre.compile_to_file("f_node_mass_pre", density1, volume, vol_flux_y, mass_flux_x);
 
 
-  return;
   Expr upwind = select(f_node_flux(j,k) < 0.0f, j+2, j-1);
   Expr donor = select(f_node_flux(j,k) < 0.0f, j+1, j);
   Expr downwind = select(f_node_flux(j,k) < 0.0f, j, j+1);
@@ -111,7 +113,14 @@ void gen_halide_func() {
              + f_mom_flux(j-1, k)
              - f_mom_flux(j,k)) / f_node_mass_post(j,k);
 
-  f_advec_vel.compile_to_file("f_advec_vel", vel1, celldx, mass_flux_x, density1, volume);
+  //f_advec_vel.compile_to_file("f_advec_vel", vel1, celldx, mass_flux_x, density1, volume);
+  std::vector<Argument> args;
+  args.push_back(vel1);
+  args.push_back(celldx);
+  args.push_back(mass_flux_x);
+  args.push_back(density1);
+  args.push_back(volume);
+  f_advec_vel.compile_to_file("f_advec_vel", args);
 
 
 }
