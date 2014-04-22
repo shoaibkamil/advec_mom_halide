@@ -168,9 +168,14 @@ int main(void) {
 
   Func advec_mom("advec_mom");
   advec_mom(j,k) = Tuple(rhs);
+//  advec_mom.vectorize(j,4).parallel(k);
+
+  Var ko, ki;
+  advec_mom.vectorize(j, 4);
+  advec_mom.parallel(k);
   advec_mom.compile_to_file("advec_mom_halide_gen", args);
 
-  advec_mom.infer_input_bounds(960,960);
+//  advec_mom.infer_input_bounds(960,960);
 
   return 0;
 }

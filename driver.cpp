@@ -22,6 +22,8 @@ static __inline__ unsigned long long rdtsc(void)
 
 #endif
 
+using namespace Halide;
+
 void advec_mom_kernel_c_(int *xmin,int *xmax,int *ymin,int *ymax,
                       double *xvel1,
                       double *yvel1,
@@ -43,8 +45,33 @@ void advec_mom_kernel_c_(int *xmin,int *xmax,int *ymin,int *ymax,
                          int *whch_vl,
                          int *swp_nmbr,
                          int *drctn);
+void advec_mom_kernel_halide(
+                      Buffer *b_volume,
+                      Buffer *b_vol_flux_y,
+                      Buffer *b_post_vol,
+                      Buffer *b_pre_vol,
+                      Buffer *b_vol_flux_x,
+                      Buffer *b_mass_flux_x,
+                      Buffer *b_node_flux,
+                      Buffer *b_density1,
+                      Buffer *b_node_mass_post,
+                      Buffer *b_node_mass_pre,
+                      Buffer *b_vel1,
+                      Buffer *b_celldx,
+                      Buffer *b_advec_vel,
+                      Buffer *b_mom_flux,
 
-void advec_mom_kernel_halide(int *xmin,int *xmax,int *ymin,int *ymax,
+
+                      Buffer *b_out_post_vol,
+                      Buffer *b_out_pre_vol,
+                      Buffer *b_out_node_flux,
+                      Buffer *b_out_node_mass_post,
+                      Buffer *b_out_node_mass_pre,
+                      Buffer *b_out_advec_vel,
+                      Buffer *b_out_mom_flux,
+                      Buffer *b_out_vel1);
+
+void advec_mom_alloc_buffers(int *xmin,int *xmax,int *ymin,int *ymax,
                       double *xvel1,
                       double *yvel1,
                       double *mass_flux_x,
@@ -64,7 +91,33 @@ void advec_mom_kernel_halide(int *xmin,int *xmax,int *ymin,int *ymax,
                       double *celldy,
                          int *whch_vl,
                          int *swp_nmbr,
-                         int *drctn);
+                         int *drctn,
+
+                      Buffer **b_volume,
+                      Buffer **b_vol_flux_y,
+                      Buffer **b_post_vol,
+                      Buffer **b_pre_vol,
+                      Buffer **b_vol_flux_x,
+                      Buffer **b_mass_flux_x,
+                      Buffer **b_node_flux,
+                      Buffer **b_density1,
+                      Buffer **b_node_mass_post,
+                      Buffer **b_node_mass_pre,
+                      Buffer **b_vel1,
+                      Buffer **b_celldx,
+                      Buffer **b_advec_vel,
+                      Buffer **b_mom_flux,
+
+
+                      Buffer **b_out_post_vol,
+                      Buffer **b_out_pre_vol,
+                      Buffer **b_out_node_flux,
+                      Buffer **b_out_node_mass_post,
+                      Buffer **b_out_node_mass_pre,
+                      Buffer **b_out_advec_vel,
+                      Buffer **b_out_mom_flux,
+                      Buffer **b_out_vel1);
+
 
 
 void create_grid(double** ptr, unsigned int size) {
@@ -142,8 +195,8 @@ int main(int argc, char* argv[]) {
   // set integer parameters
   int xmin = 1;
   int ymin = 1;
-  int xmax = 960;
-  int ymax = 960;
+  int xmax = 2048;
+  int ymax = 2048;
   int which_vl = 1;
   int swp_nmbr = 1;
   int drctn = 1;
@@ -171,6 +224,30 @@ int main(int argc, char* argv[]) {
   double *post_vol;
   double *celldx;
   double *celldy;
+  Buffer *b_volume;
+  Buffer *b_vol_flux_y;
+  Buffer *b_post_vol;
+  Buffer *b_pre_vol;
+  Buffer *b_vol_flux_x;
+  Buffer *b_mass_flux_x;
+  Buffer *b_node_flux;
+  Buffer *b_density1;
+  Buffer *b_node_mass_post;
+  Buffer *b_node_mass_pre;
+  Buffer *b_vel1;
+  Buffer *b_celldx;
+  Buffer *b_advec_vel;
+  Buffer *b_mom_flux;
+
+
+  Buffer *b_out_post_vol;
+  Buffer *b_out_pre_vol;
+  Buffer *b_out_node_flux;
+  Buffer *b_out_node_mass_post;
+  Buffer *b_out_node_mass_pre;
+  Buffer *b_out_advec_vel;
+  Buffer *b_out_mom_flux;
+  Buffer *b_out_vel1;
 
 
   create_all_grids(&xvel1,
@@ -191,6 +268,55 @@ int main(int argc, char* argv[]) {
                     &celldx,
                     &celldy,
                     size);
+
+  advec_mom_alloc_buffers(&xmin,&xmax,&ymin,&ymax,
+                      xvel1,
+                      yvel1,
+                      mass_flux_x,
+                      vol_flux_x,
+                      mass_flux_y,
+                      vol_flux_y,
+                      volume,
+                      density1,
+                      node_flux,
+                      node_mass_post,
+                      node_mass_pre,
+                      advec_vel,
+                      mom_flux,
+                      pre_vol,
+                      post_vol,
+                      celldx,
+                      celldy,
+                      &which_vl,
+                      &swp_nmbr,
+                      &drctn,
+
+                      &b_volume,
+                      &b_vol_flux_y,
+                      &b_post_vol,
+                      &b_pre_vol,
+                      &b_vol_flux_x,
+                      &b_mass_flux_x,
+                      &b_node_flux,
+                      &b_density1,
+                      &b_node_mass_post,
+                      &b_node_mass_pre,
+                      &b_vel1,
+                      &b_celldx,
+                      &b_advec_vel,
+                      &b_mom_flux,
+
+
+                      &b_out_post_vol,
+                      &b_out_pre_vol,
+                      &b_out_node_flux,
+                      &b_out_node_mass_post,
+                      &b_out_node_mass_pre,
+                      &b_out_advec_vel,
+                      &b_out_mom_flux,
+                      &b_out_vel1);
+
+
   // warm up icache
   advec_mom_kernel_c_(&xmin,&xmax,&ymin,&ymax,
                       xvel1,
@@ -213,33 +339,40 @@ int main(int argc, char* argv[]) {
                       &which_vl,
                       &swp_nmbr,
                       &drctn);
-  advec_mom_kernel_halide(&xmin,&xmax,&ymin,&ymax,
-                      xvel1,
-                      yvel1,
-                      mass_flux_x,
-                      vol_flux_x,
-                      mass_flux_y,
-                      vol_flux_y,
-                      volume,
-                      density1,
-                      node_flux,
-                      node_mass_post,
-                      node_mass_pre,
-                      advec_vel,
-                      mom_flux,
-                      pre_vol,
-                      post_vol,
-                      celldx,
-                      celldy,
-                      &which_vl,
-                      &swp_nmbr,
-                      &drctn);
 
+
+  advec_mom_kernel_halide(
+                      b_volume,
+                      b_vol_flux_y,
+                      b_post_vol,
+                      b_pre_vol,
+                      b_vol_flux_x,
+                      b_mass_flux_x,
+                      b_node_flux,
+                      b_density1,
+                      b_node_mass_post,
+                      b_node_mass_pre,
+                      b_vel1,
+                      b_celldx,
+                      b_advec_vel,
+                      b_mom_flux,
+
+
+                      b_out_post_vol,
+                      b_out_pre_vol,
+                      b_out_node_flux,
+                      b_out_node_mass_post,
+                      b_out_node_mass_pre,
+                      b_out_advec_vel,
+                      b_out_mom_flux,
+                      b_out_vel1);
 
 
   long long start, end;
 
   start = rdtsc();
+
+  for (int i=0; i<5; i++) {
 
   advec_mom_kernel_c_(&xmin,&xmax,&ymin,&ymax,
                       xvel1,
@@ -262,33 +395,39 @@ int main(int argc, char* argv[]) {
                       &which_vl,
                       &swp_nmbr,
                       &drctn);
-
+  }
   end = rdtsc();
   printf("Took %lld cycles\n", end-start);
   start = rdtsc();
-  advec_mom_kernel_halide(&xmin,&xmax,&ymin,&ymax,
-                      xvel1,
-                      yvel1,
-                      mass_flux_x,
-                      vol_flux_x,
-                      mass_flux_y,
-                      vol_flux_y,
-                      volume,
-                      density1,
-                      node_flux,
-                      node_mass_post,
-                      node_mass_pre,
-                      advec_vel,
-                      mom_flux,
-                      pre_vol,
-                      post_vol,
-                      celldx,
-                      celldy,
-                      &which_vl,
-                      &swp_nmbr,
-                      &drctn);
+
+  for (int i=0; i<5; i++) {
+  advec_mom_kernel_halide(
+                      b_volume,
+                      b_vol_flux_y,
+                      b_post_vol,
+                      b_pre_vol,
+                      b_vol_flux_x,
+                      b_mass_flux_x,
+                      b_node_flux,
+                      b_density1,
+                      b_node_mass_post,
+                      b_node_mass_pre,
+                      b_vel1,
+                      b_celldx,
+                      b_advec_vel,
+                      b_mom_flux,
 
 
+                      b_out_post_vol,
+                      b_out_pre_vol,
+                      b_out_node_flux,
+                      b_out_node_mass_post,
+                      b_out_node_mass_pre,
+                      b_out_advec_vel,
+                      b_out_mom_flux,
+                      b_out_vel1);
+
+  }
   end = rdtsc();
   printf("Took %lld cycles\n", end-start);
 
