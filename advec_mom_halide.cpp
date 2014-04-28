@@ -124,15 +124,6 @@ void advec_mom_kernel_halide(
                       Buffer *b_out_mom_flux,
                       Buffer *b_out_vel1) {
 
-//  f_post_vol(b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_post_vol.raw_buffer()); 
-//  f_pre_vol(b_vol_flux_x.raw_buffer(), b_vol_flux_y.raw_buffer(), b_volume.raw_buffer(), b_pre_vol.raw_buffer());
-//  f_node_flux(b_mass_flux_x.raw_buffer(), b_node_flux.raw_buffer());
-//  f_node_mass_post(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_node_mass_post.raw_buffer());
-//  f_node_mass_pre(b_density1.raw_buffer(), b_volume.raw_buffer(), b_vol_flux_y.raw_buffer(), b_mass_flux_x.raw_buffer(), b_node_mass_pre.raw_buffer());
-//  f_advec_vel(b_vel1.raw_buffer(), b_celldx.raw_buffer(), b_mass_flux_x.raw_buffer(), b_density1.raw_buffer(), b_volume.raw_buffer(),
-//              b_vol_flux_y.raw_buffer(), b_advec_vel.raw_buffer());
-//
-
   advec_mom_halide_gen(b_volume->raw_buffer(), b_vol_flux_y->raw_buffer(),
       b_vol_flux_x->raw_buffer(), b_mass_flux_x->raw_buffer(),
       b_density1->raw_buffer(), b_celldx->raw_buffer(), b_vel1->raw_buffer(),
@@ -145,7 +136,6 @@ void advec_mom_kernel_halide(
       b_out_node_flux->raw_buffer(), b_out_node_mass_post->raw_buffer(),
       b_out_node_mass_pre->raw_buffer(), b_out_advec_vel->raw_buffer(),
       b_out_mom_flux->raw_buffer(), b_out_vel1->raw_buffer());
-//  printf("ok\n");
   return;
 
 
