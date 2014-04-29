@@ -5,6 +5,10 @@
 
 using namespace Halide;
 
+/*
+ * This function just creates the data structures for calling Halide.
+ * I don't believe the Buffer constructors allocate new memory.
+ */
 void advec_mom_alloc_buffers(int *xmin,int *xmax,int *ymin,int *ymax,
                       double *xvel1,
                       double *yvel1,
@@ -98,6 +102,9 @@ void advec_mom_alloc_buffers(int *xmin,int *xmax,int *ymin,int *ymax,
 
 }
 
+/*
+ * The actual kernel call.
+ */
 void advec_mom_kernel_halide(
                       Buffer *b_volume,
                       Buffer *b_vol_flux_y,
