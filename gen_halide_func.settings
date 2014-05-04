@@ -1,0 +1,13 @@
+{"input_size": "256, 256",
+ "functions": [
+                {"name": "f_post_vol", "vars": ["j", "k"], "calls":[]},
+                {"name": "f_pre_vol", "vars": ["j", "k"], "calls":["f_post_vol"]},
+                {"name": "f_node_flux", "vars": ["j", "k"], "calls":[]},
+                {"name": "f_node_mass_post", "vars": ["j", "k"], "calls":["f_post_vol"]},
+                {"name": "f_node_mass_pre", "vars": ["j", "k"], "calls":["f_node_mass_post", "f_node_flux"]},
+                {"name": "f_advec_vel", "vars": ["j", "k"], "calls":["f_node_flux", "f_node_mass_pre"]},
+                {"name": "f_mom_flux", "vars": ["j", "k"], "calls":["f_advec_vel", "f_node_flux"]},
+                {"name": "advec_mom", "vars": ["j", "k"], "calls":["f_node_mass_pre", "f_mom_flux", "f_node_mass_post"]}
+              ]
+}
+                

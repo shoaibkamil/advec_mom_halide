@@ -131,6 +131,7 @@ int main(void) {
 
   Func advec_mom("advec_mom");
   advec_mom(j,k) = Tuple(rhs);
+  AUTOTUNE_HOOK(advec_mom);
 
   advec_mom.vectorize(j, 4);
   advec_mom.parallel(k);
