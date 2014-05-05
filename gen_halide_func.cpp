@@ -25,6 +25,22 @@ int main(void) {
   ImageParam advec_vel(Float(64), 2);                   // read-write
   ImageParam mom_flux(Float(64), 2);                    // read-write
 
+  /* Not sure if right place. */
+  post_vol.set_min(2,2);
+  pre_vol.set_min(2,2);
+  node_flux.set_min(2,2);
+  node_mass_pre.set_min(2,2);
+  node_mass_post.set_min(2,2);
+  advec_vel.set_min(2,2);
+  mom_flux.set_min(2,2);
+  vel1.set_min(2,2);
+  volume.set_min(2,2);
+  vol_flux_x.set_min(2,2);
+  vol_flux_y.set_min(2,2);
+  density1.set_min(2,2);
+  mass_flux_x.set_min(2,2);
+
+
   Func f_post_vol("f_post_vol");
   Func f_pre_vol("f_pre_vol");
   Func f_node_flux("f_node_flux");
@@ -44,6 +60,7 @@ int main(void) {
 
   Expr e_post_vol = volume(j,k) + vol_flux_y(j,k+1) - vol_flux_y(j,k);
   f_post_vol(j,k) = e_post_vol;
+
 
   Expr e_pre_vol = f_post_vol(j,k) + vol_flux_x(j+1,k) - vol_flux_x(j,k);
   f_pre_vol(j,k) = e_pre_vol;
@@ -135,6 +152,7 @@ int main(void) {
 
   advec_mom.vectorize(j, 4);
   advec_mom.parallel(k);
+  BASELINE_HOOK(advec_mom);
 
   /*
    * Generate and save a file we can link against later.
