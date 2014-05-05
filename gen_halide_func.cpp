@@ -10,35 +10,35 @@ int main(void) {
 
   Var j("j"), k("k");
 
-  ImageParam volume(Float(64), 2);                      // read-only
-  ImageParam vol_flux_y(Float(64), 2);                  // read-only
-  ImageParam vol_flux_x(Float(64), 2);                  // read-only
-  ImageParam mass_flux_x(Float(64), 2);                 // read-only
-  ImageParam density1(Float(64), 2);                    // read-only
-  ImageParam celldx(Float(64), 1);                      // read-only
-  ImageParam vel1(Float(64), 2);                        // read-write
-  ImageParam post_vol(Float(64), 2);                    // read-write
-  ImageParam pre_vol(Float(64), 2);                     // read-write
-  ImageParam node_flux(Float(64), 2);                   // read-write
-  ImageParam node_mass_post(Float(64), 2);              // read-write
-  ImageParam node_mass_pre(Float(64), 2);               // read-write
-  ImageParam advec_vel(Float(64), 2);                   // read-write
-  ImageParam mom_flux(Float(64), 2);                    // read-write
+  ImageParam volume(Float(64), 2, "volume");                      // read-only
+  ImageParam vol_flux_y(Float(64), 2, "vol_flux_y");                  // read-only
+  ImageParam vol_flux_x(Float(64), 2, "vol_flux_x");                  // read-only
+  ImageParam mass_flux_x(Float(64), 2, "mass_flux_x");                 // read-only
+  ImageParam density1(Float(64), 2, "density1");                    // read-only
+  ImageParam celldx(Float(64), 1, "celldx");                      // read-only
+  ImageParam vel1(Float(64), 2, "vel1");                        // read-write
+  ImageParam post_vol(Float(64), 2, "post_vol");                    // read-write
+  ImageParam pre_vol(Float(64), 2, "pre_vol");                     // read-write
+  ImageParam node_flux(Float(64), 2, "node_flux");                   // read-write
+  ImageParam node_mass_post(Float(64), 2, "node_mass_post");              // read-write
+  ImageParam node_mass_pre(Float(64), 2, "node_mass_pre");               // read-write
+  ImageParam advec_vel(Float(64), 2, "advec_vel");                   // read-write
+  ImageParam mom_flux(Float(64), 2, "mom_flux");                    // read-write
 
   /* Not sure if right place. */
-  post_vol.set_min(2,2);
-  pre_vol.set_min(2,2);
-  node_flux.set_min(2,2);
-  node_mass_pre.set_min(2,2);
-  node_mass_post.set_min(2,2);
-  advec_vel.set_min(2,2);
-  mom_flux.set_min(2,2);
-  vel1.set_min(2,2);
-  volume.set_min(2,2);
-  vol_flux_x.set_min(2,2);
-  vol_flux_y.set_min(2,2);
-  density1.set_min(2,2);
-  mass_flux_x.set_min(2,2);
+  //post_vol.set_min(2,2);
+  //pre_vol.set_min(2,2);
+  //node_flux.set_min(2,2);
+  //node_mass_pre.set_min(2,2);
+  //node_mass_post.set_min(2,2);
+  //advec_vel.set_min(2,2);
+  //mom_flux.set_min(2,2);
+  //vel1.set_min(2,2);
+  //volume.set_min(2,2);
+  //vol_flux_x.set_min(2,2);
+  //vol_flux_y.set_min(2,2);
+  //density1.set_min(2,2);
+  //mass_flux_x.set_min(2,2);
 
 
   Func f_post_vol("f_post_vol");
