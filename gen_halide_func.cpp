@@ -2,6 +2,9 @@
 #include <iostream>
 
 using namespace Halide;
+#define AUTOTUNE_HOOK(_x)
+#define BASELINE_HOOK(_x)
+
 
 /*
  * We only currently generate the case where mom_sweep=2 and direction=1.
@@ -24,21 +27,6 @@ int main(void) {
   ImageParam node_mass_pre(Float(64), 2, "node_mass_pre");               // read-write
   ImageParam advec_vel(Float(64), 2, "advec_vel");                   // read-write
   ImageParam mom_flux(Float(64), 2, "mom_flux");                    // read-write
-
-  /* Not sure if right place. */
-  //post_vol.set_min(2,2);
-  //pre_vol.set_min(2,2);
-  //node_flux.set_min(2,2);
-  //node_mass_pre.set_min(2,2);
-  //node_mass_post.set_min(2,2);
-  //advec_vel.set_min(2,2);
-  //mom_flux.set_min(2,2);
-  //vel1.set_min(2,2);
-  //volume.set_min(2,2);
-  //vol_flux_x.set_min(2,2);
-  //vol_flux_y.set_min(2,2);
-  //density1.set_min(2,2);
-  //mass_flux_x.set_min(2,2);
 
 
   Func f_post_vol("f_post_vol");
@@ -133,21 +121,10 @@ int main(void) {
   args.push_back(mom_flux);
 
   /*
-   * Because there are multiple output arrays, we build a tuple,
-   * which Halide uses as output for such a function.
+   * We don't need any of the temporary work arrays.  Just vel1.
    */
-  std::vector<Expr> rhs;
-  rhs.push_back(e_post_vol);
-  rhs.push_back(e_pre_vol);
-  rhs.push_back(e_node_flux);
-  rhs.push_back(e_node_mass_post);
-  rhs.push_back(e_node_mass_pre);
-  rhs.push_back(e_advec_vel);
-  rhs.push_back(e_mom_flux);
-  rhs.push_back(e_vel1);
-
   Func advec_mom("advec_mom");
-  advec_mom(j,k) = Tuple(rhs);
+  advec_mom(j,k) = e_vel1;
   AUTOTUNE_HOOK(advec_mom);
 
   advec_mom.vectorize(j, 4);

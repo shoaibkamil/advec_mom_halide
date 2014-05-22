@@ -9,4 +9,4 @@ staticfast:
 	g++ -static -O3 -fopenmp ${INCLUDES} driver.cpp  advec_mom_kernel_c.c advec_mom_halide.cpp -o advec_mom advec_mom_halide_gen.o ${LIBS}
 
 gen: gen_halide_func.cpp
-	g++ ${INCLUDES} gen_halide_func.cpp o gen ${LIBS}
+	g++ ${INCLUDES} gen_halide_func.cpp -o gen ${LIBS}
